@@ -12,11 +12,11 @@ RStudio with Machine Learning dependencies, based on [Rocker RStudio ML Docker c
 To run these containers, you must first pull them from DockerHub
 
 ```
-docker pull cyversevice/rstudio-ml:latest
+docker pull harbor.cyverse.org/vice/rstudio/ml-verse:latest
 ```
 
 ```
-docker run -it --gpus all --rm -v /$HOME:/app --workdir /app -p 8787:80 -e REDIRECT_URL=http://localhost:8787 cyversevice/rstudio-ml:latest
+docker run -it --gpus all --rm -v /$HOME:/app --workdir /app -p 8787:80 -e REDIRECT_URL=http://localhost:8787 harbor.cyverse.org/vice/rstudio/ml-verse:latest
 ```
 
 The default username is `rstudio` and password is `rstudio1`. To reset the password, add the flag `-e PASSWORD=<yourpassword>` in the `docker run` statement.
@@ -32,7 +32,7 @@ Unless you plan on making changes to this container, you should just use the exi
 To build your own container with a Dockerfile and additional dependencies, pull the pre-built image from DockerHub:
 
 ```
-FROM cyversevice/rstudio-ml:latest
+FROM harbor.cyverse.org/vice/rstudio/ml-verse:latest
 ```
 
 Follow the instructions in the [VICE manual for integrating your own tools and apps](https://cyverse-visual-interactive-computing-environment.readthedocs-hosted.com/en/latest/developer_guide/building.html).
