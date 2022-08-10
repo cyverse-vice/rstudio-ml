@@ -1,28 +1,44 @@
-FROM rocker/ml-gpu:latest
-# Pulls latest Rocker GPU Machine Learning Container https://github.com/rocker-org/ml
+FROM ghcr.io/rocker-org/ml-verse:latest
+# Pulls the latest Rocker Machine Learning Container 
+# https://github.com/rocker-org/rocker-versioned2
 
-MAINTAINER "Tyson Lee Swetnam tswetnam@cyverse.org"
-# This image uses the Rocker verse RStudio image - thanks R OpenSci!
+# Build-time metadata as defined at http://label-schema.org
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.name="CyVerse RStudio ML" \
+      org.label-schema.description="Built from Rocker-Project RStudio ML, additional depends for CyVerse K8s workbench" \
+      org.label-schema.url="https://cyverse.org" \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-url="e.g. https://github.com/cyverse-vice/rstudio-ml" \
+      org.label-schema.vendor="CyVerse" \
+      org.label-schema.version=$VERSION \
+      org.label-schema.schema-version="1.0.0"
 
-## Install CyVerse VICE Depends and a few features
-RUN apt-get update && apt-get install -y lsb wget apt-transport-https python2.7 python-requests curl supervisor nginx gnupg2 htop nano vim libfuse2
+# Install a few dependencies for iCommands, text editing, and monitoring instances
+RUN apt-get update && apt-get install -y ca-certificates lsb-release wget apt-transport-https curl supervisor nginx gnupg2 libfuse2 nano htop gcc less nodejs software-properties-common apt-utils glances
 
-RUN curl "http://ftp.se.debian.org/debian/pool/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u8_amd64.deb" -O && \
-    dpkg -i libssl1.0.0_1.0.1t-1+deb8u8_amd64.deb && \
-    rm libssl1.0.0_1.0.1t-1+deb8u8_amd64.deb
+RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - && \
+    echo "deb [arch=amd64] https://packages.irods.org/apt/ $(lsb_release -sc) main" >> /etc/apt/sources.list.d/renci-irods.list && \
+    apt-get update && \
+    apt install -y irods-icommands 
 
-# Install iCommands
-RUN wget https://files.renci.org/pub/irods/releases/4.1.10/ubuntu14/irods-icommands-4.1.10-ubuntu14-x86_64.deb && dpkg -i irods-icommands-4.1.10-ubuntu14-x86_64.deb
+# Install GitHub CLI
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/etc/apt/trusted.gpg.d/githubcli-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list && \
+    apt update && \
+    apt install gh
 
-# Reverse proxy stuff
-ADD https://github.com/hairyhenderson/gomplate/releases/download/v2.5.0/gomplate_linux-amd64 /usr/bin/gomplate
+# Add gomplate
+ADD https://github.com/hairyhenderson/gomplate/releases/download/v3.9.0/gomplate_linux-amd64 /usr/bin/gomplate
 RUN chmod a+x /usr/bin/gomplate
 
 # provide read and write access to Rstudio users for default R library location
 RUN chmod -R 777 /usr/local/lib/R/site-library
 
 ENV PASSWORD "rstudio1"
-RUN bash /etc/cont-init.d/userconf
+#RUN bash /etc/cont-init.d/userconf
 
 COPY run.sh /usr/local/bin/run.sh
 RUN chmod +x /usr/local/bin/run.sh
@@ -33,5 +49,16 @@ COPY supervisor-nginx.conf /etc/supervisor/conf.d/nginx.conf
 COPY supervisor-rstudio.conf /etc/supervisor/conf.d/rstudio.conf
 
 ENV REDIRECT_URL "http://localhost/"
+
+ARG LOCAL_USER=rstudio
+ARG PRIV_CMDS='/bin/ch*,/bin/cat,/bin/gunzip,/bin/tar,/bin/mkdir,/bin/ps,/bin/mv,/bin/cp,/usr/bin/apt*,/usr/bin/pip*,/bin/yum'
+
+RUN if [ -x /usr/bin/apt ]; then \
+      apt-get update && apt-get -y install sudo && rm -rf /var/lib/apt/lists/*; \
+    elif [ -x /bin/yum ]; then \
+      yum -y update && yum -y install sudo && yum clean all; \
+    fi
+
+RUN echo "$LOCAL_USER ALL=NOPASSWD: $PRIV_CMDS" >> /etc/sudoers
 
 ENTRYPOINT ["/usr/local/bin/run.sh"]

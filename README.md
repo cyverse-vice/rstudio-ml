@@ -5,11 +5,6 @@
 RStudio with Machine Learning dependencies, based on [Rocker RStudio ML Docker container](https://hub.docker.com/r/rocker/ml) for CyVerse VICE. VICE requires additional configuration files (e.g. `nginx`) to be compatible with our Condor and Kubernetes orchestration. 
 
 
-quick launch | tag | size | metrics | build | 
------------- | --- | ---- | ------- | ------|
-<a href="https://de.cyverse.org/de/?type=quick-launch&quick-launch-id=b548d3e2-3310-45ae-8b1f-78e8cce2cfaf&app-id=3548f43a-bed1-11e9-af16-008cfa5ae621" target="_blank"><img src="https://de.cyverse.org/Powered-By-CyVerse-blue.svg"></a> | [![TAG](https://images.microbadger.com/badges/version/cyversevice/shiny-verse.svg)](https://microbadger.com/images/cyversevice/shiny-verse) | [![SIZE](https://images.microbadger.com/badges/image/cyversevice/shiny-verse.svg)](https://microbadger.com/images/cyversevice/shiny-verse) | [![Docker Pulls](https://img.shields.io/docker/pulls/cyversevice/rstudio-verse?color=blue&logo=docker&logoColor=white)](https://hub.docker.com/r/cyversevice/rstudio-verse) | [![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/cyversevice/rstudio-ml?color=blue&logo=docker&logoColor=white)](https://hub.docker.com/r/cyversevice/rstudio-ml) 
-[![VICE](https://img.shields.io/badge/CyVerse-VICE-blue.svg?style=popout&logo=Docker&color=#1488C6)]() | [![TAG](https://images.microbadger.com/badges/version/cyversevice/shiny-verse:3.5.0.svg)](https://microbadger.com/images/cyversevice/shiny-verse:3.5.0) | [![SIZE](https://images.microbadger.com/badges/image/cyversevice/shiny-verse:3.5.0.svg)](https://microbadger.com/images/cyversevice/shiny-verse:3.5.0) | [![Docker Pulls](https://img.shields.io/docker/pulls/cyversevice/rstudio-verse?color=blue&logo=docker&logoColor=white)](https://hub.docker.com/r/cyversevice/rstudio-verse) | [![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/cyversevice/rstudio-verse?color=blue&logo=docker&logoColor=white)](https://hub.docker.com/r/cyversevice/rstudio-verse) 
-
 # Instructions
 
 ## Run this Docker locally or on a Virtual Machine
